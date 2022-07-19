@@ -24,6 +24,14 @@ public class PlaneControl : MonoBehaviour
     float velocityH = 0f;
     float yaw;
 
+    // Fire
+
+    public GameObject bulletPrefab;
+    public Transform LBarrel;
+    public Transform RBarrel;
+    float fireTimer = 0f;
+    public float fireCoolDown = 0.33f;
+
     private void Start()
     {
         maxSpeed = speedControl.maxValue;
@@ -37,6 +45,7 @@ public class PlaneControl : MonoBehaviour
     }
     void ControlPlane()
     {
+        fireTimer += Time.deltaTime;
         flySpeed = speedControl.value;
         float speedRate = (flySpeed - minSpeed) / deltaSpeed;
         if (speedRate < 0.3f)
@@ -60,6 +69,10 @@ public class PlaneControl : MonoBehaviour
         {
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
+            if (Input.GetButton("Fire1"))
+            {
+                Fire();
+            }
         }
         else
         {
@@ -80,8 +93,17 @@ public class PlaneControl : MonoBehaviour
         transform.localRotation = Quaternion.Euler(Vector3.up * yaw + Vector3.right * pitch + Vector3.forward * roll);
     }
 
-    void Bomb()
+    public void Fire()
     {
-
+        if (fireTimer < fireCoolDown)
+        {
+            return;
+        }
+        else
+        {
+            fireTimer = 0f;
+            GameObject Lbullet = Instantiate(bulletPrefab, LBarrel.position, transform.rotation);
+            GameObject Rbullet = Instantiate(bulletPrefab, RBarrel.position, transform.rotation);
+        }
     }
 }
